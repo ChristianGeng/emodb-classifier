@@ -1,1 +1,29 @@
+#+TITLE: README 
+
+Document the Steps that were needed to carry out the audEERING coding Task
+
+* Step 1 - Building the dataset
+
+Dataset creation is done via gradle task, so for recap, a working gradle installation is
+required. The database is expected to have been extracted into the `data/raw subdirectory` sich that
+the path to the wav-files is `data/raw/wav/` 
+The task itself can be invoked via
+
+#+BEGIN_SRC shell
+./gradlew makeDataSet 
+#+END_SRC
+
+The shell script `wav2features.sh` that is called during the task to date requires some extra work, as some env
+variables are currently hardcoded.
+
+
+* Step 2 - Run the model for Report Generation 
+
+#+BEGIN_SRC shell
+./gradlew makeModel 
+#+END_SRC
+
+* Informal Final Observations
+
+- Often 
 
