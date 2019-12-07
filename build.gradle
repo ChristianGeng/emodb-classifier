@@ -4,3 +4,13 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds/
  */
+
+
+task makeDataSet(type: Exec) {
+    workingDir "$projectDir/src/data/"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'mycommand'
+    } else {
+        commandLine 'sh', 'wav2features.sh'
+    }
+}

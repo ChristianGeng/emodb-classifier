@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
+echo "Hello Wrokd!"
+
 indir="../../data/raw/wav/"
 conffile="/home/christian/bin/opensmile-2.3.0/config/IS13_ComParE.conf"
 outfile="../../data/processed/data.csv"
+
+echo $indir
+echo $conffile
+echo $outfile
+
+# TODO: using env variables from .env or so
 # SMILExtract="~/bin/opensmile-2.3.0/bin/linux_x64_standalone_static/SMILExtract"
 # rm -fv ${outdir}"*.csv"
 
