@@ -20,7 +20,11 @@ def run_notebook(tmpfile, clfname='GMM_basic'):
     pm.execute_notebook(
         'report_nb.ipynb',
         tmpfile,
-        parameters=dict(clf_name=clfname)
+        parameters=dict(clf_name=clfname),
+        progress_bar=False,
+        log_output=False,
+        report_mode=False,
+        request_save_on_cell_execute=False
     )
 
 
@@ -85,7 +89,7 @@ def output_HTML(read_file, output_file='tmp.html'):
     codecs.open(output_file, 'w', encoding='utf-8').write(output)
 
 import time
-save_notebook()
+# save_notebook()
 time.sleep(3)
 current_file = 'GMM.ipynb'
 # output_file = 'output_file.html'

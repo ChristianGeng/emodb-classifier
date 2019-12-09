@@ -1,5 +1,9 @@
 #+TITLE: README 
 
+
+
+
+
 Document the Steps that were needed to carry out the audEERING coding Task
 
 * Step 1 - Building the dataset
@@ -16,14 +20,129 @@ The task itself can be invoked via
 The shell script `wav2features.sh` that is called during the task to date requires some extra work, as some env
 variables are currently hardcoded.
 
+- TODOS: Currently uses the functionals only, these are extracted using a script that iterates over
+  a generated file list. Directory Input?
 
-* Step 2 - Run the model for Report Generation 
+* Step 2 - Build Classifier
+
+- Nur die Functionals wurden Extrahiert, also nicht mehrere Analyseframes per Äusserung
+- 
+
+* Step 3 - Generate Report 
+
+Run the model for Report Generation
 
 #+BEGIN_SRC shell
 ./gradlew makeModel 
 #+END_SRC
 
+
+* Deployment 
+
+# As a deliverable, please provide access to a Git repository that contains all code
+# and documentation to perform the steps above, and provide the report as an
+# assets or webpage. Ideally, everything can be run in a clean sandbox environment
+# such as a stock Ubuntu VM or Docker container. It’s perfectly acceptable to
+# keep this private, as long as you share it with us.
+
+
 * Informal Final Observations
 
 - Often 
 
+
+
+
+* Misc
+
+https://towardsdatascience.com/beginners-guide-to-data-science-python-docker-3181fd321a5c
+https://nbconvert.readthedocs.io/en/latest/execute_api.html
+https://elitedatascience.com/imbalanced-classes
+
+https://github.com/trigeorgis/ComParE2017
+https://github.com/sercharpak/Emo-DB
+
+
+Eclipse
+https://oremacs.com/2017/03/28/emacs-cpp-ide/
+https://www.eclipse.org/forums/index.php/t/1084520/
+
+
+
+https://github.com/takluyver/nbparameterise/tree/master/examples
+
+
+GMM UBM for speaker verification with code
+https://wsstriving.github.io/2016/04/28/Code-Based-GMM-UBM-Tutorial/
+
+
+
+In the conventional GMM-UBM framework the universal background model (UBM) is a Gaussian mixture
+model (GMM) that is trained on a pool of data (known as the background or development data) from a
+large number of speakers. The speaker-specific models are then adapted from the UBM using the
+maximum a posteriori (MAP) estimation. During the evaluation phase, each test segment is scored
+either against all enrolled speaker models to determine who is speaking (speaker identification), or
+against the background model and a given speaker model to accept/reject an identity claim (speaker
+verification). Functions or modules that will be used for GMM-UBM approach in MSR Identity Toolkit
+are depicted in figure 2. 
+
+
+* Smile Tools 
+
+
+Hi Christian,
+
+ein kleiner Nachtrag noch zu der Aufgabe, bzw. eine Add-on Aufgabe:
+
+Schau dir bitte auch schonmal den openSMILE source code (C++) etwas an, ausgehend vom main binary
+progsrc/smilextract/SMILExtract.cpp, und einzelne Komponenten, wie z.B. src/lldcore/energy.cpp um
+dich ein bisschen einzulesen und dann ggf. am Dienstag adhoc ein paar kleine Fragen zum C++ zu
+beantworten, insb. z.B. das Energy Feature oder ähnliches zu modifizieren.
+
+VG,
+Florian
+
+#+BEGIN_SRC sh
+-C /home/christian/bin/opensmile-2.3.0/config/IS13_ComParE.conf  -I /media/win-d/myfiles/2019/emodb-classifier/data/raw/wav/03a01Fa.wav -csvoutput /tmp/results.csv  -appendcsv 1
+-C /home/christian/bin/opensmile-2.3.0/config/IS13_ComParE.conf  -I /media/win-d/myfiles/2019/emodb-classifier/data/raw/wav/03a01Fa.wav -csvoutput /tmp/results.csv  -appendcsv 1
+SMILExtract -C myconfig/demo1.conf -I ./example-audio/opensmile.wav -O myenergy.csv
+#+END_SRC
+
+** Command Line Options
+
+SMILExtract -L lists all components
+SMILExtract -H
+
+The bare energy config leider nicht im Pfad
+SMILExtract -C config/demo/demo1_energy.conf -I wav_samples/speech01.wav -O speech01.energy.csv
+
+** Voice Activity
+
+ +++ 'cVadV1' +++
+   A voice activity detector based on Line-Spectral-Frequencies, Mel spectra and energy + smoothing. This component requires input of the following type in the following order: MelSpec;lsf;energy. See vadV1.hpp for an example config!
+
+** Initialisieren eigener Config (aus dem Buch)
+
+SMILExtract -cfgFileTemplate -cfgFileDescriptions  -configDflt cWaveSource,cFramer,cEnergy,cCsvSink -l 1 2> myconfig/demo1.conf
+
+
+* Docker
+
+
+https://hackernoon.com/efficient-development-with-docker-and-docker-compose-e354b4d24831
+
+https://runnable.com/docker/python/docker-compose-with-flask-apps
+
+
+Zusammenhängen von Dockerfiles und docker-compose: 
+https://medium.com/bitcraft/docker-composing-a-python-3-flask-app-line-by-line-93b721105777
+
+
+docker run --name emo-classifier -v ..:/data 
+
+-d detach
+docker container stop emo-classifier
+$ docker container rm emo-classifier
+$ docker volume rm memo-classifier
+
+#  nginx:latest

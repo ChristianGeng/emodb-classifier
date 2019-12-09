@@ -9,8 +9,8 @@ from functools import reduce
 from sklearn.base import TransformerMixin
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.preprocessing import FunctionTransformer, StandardScaler, RobustScaler
-from sklearn.preprocessing import Imputer, MultiLabelBinarizer
-
+from sklearn.preprocessing import MultiLabelBinarizer
+# from sklearn.preprocessing import Imputer
 
 class DFFunctionTransformer(TransformerMixin):
     # FunctionTransformer but for pandas DataFrames
@@ -125,6 +125,59 @@ class ColumnExtractor(TransformerMixin):
         Xcols = X[self.cols]
         return Xcols
 
+
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.decomposition import PCA
+
+class MaskedPCA(BaseEstimator, TransformerMixin):
+    """ # https://stackoverflow.com/questions/24124622/pipeline-with-pca-on-feature-subset-only-in-scikit-learn
+    import numpy as np
+    X = np.random.randn(100, 20)
+    mask = np.arange(20) > 4
+
+    mpca = MaskedPCA(n_components=2, mask=mask)
+
+    transformed = mpca.fit(X).transform(X)
+
+    # check whether first five columns are equal
+    from numpy.testing import assert_array_equal
+    assert_array_equal(X[:, :5], transformed[:, :5])
+
+    """
+    def __init__(self, n_components=2, mask=None):  
+        # mask should contain selected cols. Suppose it is boolean to avoid code overhead
+        self.n_components = n_components
+        self.mask = mask
+
+    def fit(self, X):
+        self.pca = PCA(n_components=self.n_components)
+        mask = self.mask
+        mask = self.mask if self.mask is not None else slice(None)
+        self.pca.fit(X[:, mask])
+        return self
+
+    def transform(self, X):
+        mask = self.mask if self.mask is not None else slice(None)
+        pca_transformed = self.pca.transform(X[:, mask])
+        if self.mask is not None:
+            remaining_cols = X[:, ~mask]
+            return np.hstack([remaining_cols, pca_transformed])
+        else:
+            return pca_transformed
+
+    def inverse_transform(self, X):
+        if self.mask is not None:
+            # Inverse transform appropriate data
+            inv_mask = np.arange(len(X[0])) >= sum(~self.mask)
+            inv_transformed = self.pca.inverse_transform(X[:, inv_mask])
+
+            # Place inverse transformed columns back in their original order
+            inv_transformed_reorder = np.zeros([len(X), len(self.mask)])
+            inv_transformed_reorder[:, self.mask] = inv_transformed
+            inv_transformed_reorder[:, ~self.mask] = X[:, ~inv_mask]
+            return inv_transformed_reorder
+        else:
+            return self.pca.inverse_transform(X)
 
 class ZeroFillTransformer(TransformerMixin):
 
