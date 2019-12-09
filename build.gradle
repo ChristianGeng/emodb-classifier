@@ -14,11 +14,29 @@ task makeDataSet(type: Exec) {
     }
 }
 
-task makeModel(type: Exec) {
+task trainModel(type: Exec) {
     workingDir "$projectDir/src/models/"
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         commandLine 'cmd', '/c', 'mycommand'
     } else {
-        commandLine 'python', 'run_model.py'
+        commandLine 'python', 'train_model.py'
+    }
+}
+
+task makeReportSvmBasic(type: Exec) {
+    workingDir "$projectDir/src/models/"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'mycommand'
+    } else {
+        commandLine 'python', 'make_report.py', 'svm_basic'
+    }
+}
+
+task makeReportGMMBasic(type: Exec) {
+    workingDir "$projectDir/src/models/"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'mycommand'
+    } else {
+        commandLine 'python', 'make_report.py', 'GMM_basic'
     }
 }

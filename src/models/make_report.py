@@ -1,17 +1,17 @@
 import papermill as pm
 import nbformat
+# import time
 
 from urllib.request import urlopen
 import tempfile
 from traitlets.config import Config
 from nbconvert import HTMLExporter
-import codecs
-import nbformat
 
-from IPython.display import Javascript
+import argparse
+import sys
+# from IPython.display import Javascript
 from traitlets import Integer
 from nbconvert.preprocessors import Preprocessor
-from traitlets.config import Config
 
 
 def run_notebook(tmpfile, clfname='GMM_basic'):
@@ -46,34 +46,21 @@ class PelicanSubCell(Preprocessor):
 
 def save_notebook():
     # from IPython.display import Javascript
-    display(
-        Javascript("IPython.notebook.save_notebook()"),
-        include=['application/javascript']
-    )
+    # display(
+    #     Javascript("IPython.notebook.save_notebook()"),
+    #     include=['application/javascript']
+    # )
+    pass
 
-#def output_HTML(exporter, output_file, output):
+# def output_HTML(exporter, output_file, output):
     # exporter = HTMLExporter()
     # read_file is '.ipynb', output_file is '.html'
     # output_notebook = nbformat.read(read_file, as_version=4)
     # output, resources = exporter.from_notebook_node(output_notebook)
 
 
-tmpfile = tempfile.mktemp(suffix='.ipynb')
-run_notebook(tmpfile, clfname='GMM_basic')
-
-url = 'file://'+tmpfile
-response = urlopen(url).read().decode()
-jake_notebook = nbformat.reads(response, as_version=4)
-
-
-#jake_notebook = nbformat.reads(response, as_version=4)
-# jake_notebook.cells[0]
-# save_notebook()q
-
-
 def output_HTML(read_file, output_file='tmp.html'):
     import codecs
-    import nbformat
 
     c = Config()
     # c.PelicanSubCell.start = 7
@@ -88,19 +75,48 @@ def output_HTML(read_file, output_file='tmp.html'):
     output, resources = exporter.from_notebook_node(read_file)
     codecs.open(output_file, 'w', encoding='utf-8').write(output)
 
-import time
-# save_notebook()
-time.sleep(3)
-current_file = 'GMM.ipynb'
-# output_file = 'output_file.html'
-output_HTML(jake_notebook)
+def parse_args(args):
+    """Parse command line parameters
+
+    Args:
+      args ([str]): command line parameters as list of strings
+
+    Returns:
+      :obj:`argparse.Namespace`: command line parameters namespace
+    """
+    parser = argparse.ArgumentParser(
+        description="Write Fib Report")
+    parser.add_argument(
+        dest="clf",
+        type=str,
+        help="name of classifier")
+
+    return parser.parse_args(args)
 
 
-#     exporter = HTMLExporter()
-#     # read_file is '.ipynb', output_file is '.html'
-#     output_notebook = nbformat.read(read_file, as_version=4)
-#     output, resources = exporter.from_notebook_node(output_notebook)
-#     codecs.open(output_file, 'w', encoding='utf-8').write(output)
+def main(args):
+    args = parse_args(args)
+    tmpfile = tempfile.mktemp(suffix='.ipynb')
+    run_notebook(tmpfile, clfname=args.clf)
+    url = 'file://'+tmpfile
+    response = urlopen(url).read().decode()
+    jake_notebook = nbformat.reads(response, as_version=4)
 
-    
-# codecs.open(output_file, 'w', encoding='utf-8').write(body)   
+    # save_notebook()
+
+    # save_notebook()
+    # time.sleep(2)
+    # current_file = 'GMM.ipynb'
+    # output_file = 'output_file.html'
+    output_HTML(jake_notebook, output_file=args.clf+'.html')
+
+    #     exporter = HTMLExporter()
+    #     # read_file is '.ipynb', output_file is '.html'
+    #     output_notebook = nbformat.read(read_file, as_version=4)
+    #     output, resources = exporter.from_notebook_node(output_notebook)
+    #     codecs.open(output_file, 'w', encoding='utf-8').write(output)
+
+    # codecs.open(output_file, 'w', encoding='utf-8').write(body)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

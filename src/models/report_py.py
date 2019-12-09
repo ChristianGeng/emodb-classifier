@@ -18,7 +18,7 @@ from sklearn.datasets import make_classification  # noqa
 from sklearn.metrics import (accuracy_score, classification_report,  # noqa
                              confusion_matrix, f1_score, make_scorer,
                              precision_recall_fscore_support)
-from sklearn.mixture import GaussianMixture as GMM
+# from sklearn.mixture import GaussianMixture as GMM
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder, OneHotEncoder  # noqa
 from sklearn.externals import joblib
@@ -39,7 +39,9 @@ from train_model import get_data
 
 np.set_printoptions(precision=2)
 
-clf_name = 'GMM_basic'
+# clf_name = 'GMM_basic'
+clf_name = 'svm_basic'
+
 df, df_train, df_test, y_train, y_test = get_data()
 
 model_dir = os.path.join(project_dir, 'models')

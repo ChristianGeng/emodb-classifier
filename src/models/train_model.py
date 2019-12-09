@@ -151,61 +151,97 @@ def get_data():
     return df, df_train, df_test, y_train, y_test
 
 
-def do_train(clf, clf_name):
+class TheEstimator(object):
 
-    df, df_train, df_test, y_train, y_test = get_data()
-    NUM_FEATS, CAT_FEATS = get_feature_names(df)
-    # Preprocessing with a Pipeline that uses Pandas Capable Processors
-    pipeline = Pipeline([
-        ('features', DFFeatureUnion([
-            ('categoricals', Pipeline([
-                ('extract', ColumnExtractor(CAT_FEATS)),
-                ('dummy', DummyTransformer())
+    def __init__(self):
+
+        df, df_train, df_test, y_train, y_test = get_data()
+        NUM_FEATS, CAT_FEATS = get_feature_names(df)
+        # Preprocessing with a Pipeline that uses Pandas Capable Processors
+
+        self.pipeline = Pipeline([
+            ('features', DFFeatureUnion([
+                ('categoricals', Pipeline([
+                    ('extract', ColumnExtractor(CAT_FEATS)),
+                    ('dummy', DummyTransformer())
+                ])),
+                ('numerics', Pipeline([
+                    ('extract', ColumnExtractor(NUM_FEATS)),
+                    ('zero_fill', ZeroFillTransformer())
+                ]))
             ])),
-            ('numerics', Pipeline([
-                ('extract', ColumnExtractor(NUM_FEATS)),
-                ('zero_fill', ZeroFillTransformer())
-            ]))
-        ])),
-        ('scale', DFRobustScaler())
-    ])
+            ('std_scaler', preprocessing.StandardScaler())
+        ])
+        # note ('scale', DFRobustScaler()) is much worse
 
-    pipeline.fit(df_train)
-    X_train_t = pipeline.transform(df_train)
-    # X_test_t = pipeline.transform(df_test)
+        self.pipeline.fit(df_train)
+        X_train_t = self.pipeline.transform(df_train)
+        # X_test_t = self.pipeline.transform(df_test)
 
-    label_encoder = LabelEncoder()
-    y_train_t = label_encoder.fit_transform(np.array(y_train.values))
-    # y_test_enc = label_encoder.fit_transform(y_test)
-    # print(pd.Series(y_train_t).value_counts())
-    # label_encoder.classes_
+        self.label_encoder = LabelEncoder()
+        y_train_t = self.label_encoder.fit_transform(np.array(y_train.values))
+        # y_test_enc = label_encoder.fit_transform(y_test)
+        # print(pd.Series(y_train_t).value_counts())
+        # label_encoder.classes_
 
-    sm = SMOTE(random_state=42)
-    X_train_t_res, y_train_t_res = sm.fit_resample(X_train_t, y_train_t)
-    # print('Resampled dataset shape %s' % Counter(y_train_t_res))
-    # print("resampled shape", X_train_t_res.shape)
-    # print("original shape", X_train_t.shape)
+        sm = SMOTE(random_state=42)
+        self.X_train_t_res, self.y_train_t_res = sm.fit_resample(X_train_t, y_train_t)
+        # print('Resampled dataset shape %s' % Counter(y_train_t_res))
+        # print("resampled shape", X_train_t_res.shape)
+        # print("original shape", X_train_t.shape)
 
-    clf.fit(X_train_t_res, y_train_t_res)
+    def fit_and_save(self, X, y=None):
+        if y is None:
+            self.clf.fit(self.X_train_t_res)
+        else:
+            self.clf.fit(self.X_train_t_res, self.y_train_t_res)
 
-    model_dir = os.path.join(project_dir, 'models')
-    clf_outname = os.path.join(model_dir, 'clf_'+clf_name+'.pkl')
-    # print('dumping results')
-    # print('classifier: ', clf_outname)
-    joblib.dump(clf, clf_outname)
+        model_dir = os.path.join(project_dir, 'models')
+        clf_outname = os.path.join(model_dir, 'clf_'+self.clf_name+'.pkl')
+        # print('dumping results')
+        # print('classifier: ', clf_outname)
+        joblib.dump(self.clf, clf_outname)
 
-    pipeline_outname = os.path.join(model_dir, 'prepro_pipeline_'+clf_name+'.pkl')
-    # print('pipeline: ', pipeline_outname)
-    joblib.dump(pipeline, pipeline_outname)
+        pipeline_outname = os.path.join(model_dir, 'prepro_pipeline_'+self.clf_name+'.pkl')
+        # print('pipeline: ', pipeline_outname)
+        joblib.dump(self.pipeline, pipeline_outname)
 
-    label_enc_outname = os.path.join(model_dir, 'label_encoder_'+clf_name+'.pkl')
-    print('y encoder: ', label_enc_outname)
-    joblib.dump(label_encoder, label_enc_outname)
+        label_enc_outname = os.path.join(model_dir, 'label_encoder_'+self.clf_name+'.pkl')
+        print('y encoder: ', label_enc_outname)
+        joblib.dump(self.label_encoder, label_enc_outname)
 
+    def set_estimator(self, clf, clf_name):
+        self.clf = clf
+        self.clf_name = clf_name
+
+# def do_train(clf, clf_name):
 
 if __name__ == '__main__':
     n_classes = len(emotion_codes().keys())
-    clf = GMM(n_components=n_classes, covariance_type='spherical')
-    do_train(clf, 'GMM_basic')
+    es = TheEstimator()
+
+    gmm_clf = GMM(n_components=n_classes,
+                  covariance_type='spherical',
+                  n_init=5,
+                  means_init=pd.DataFrame(es.X_train_t_res).groupby(es.y_train_t_res).mean().values)
+
+    es.set_estimator(gmm_clf, 'GMM_basic')
+    print("Fitting and saving GMM")
+    es.fit_and_save(es.X_train_t_res)
+    
     clf = svm.LinearSVC()
-    do_train(clf, 'svm_basic')
+    es.set_estimator(clf, 'svm_basic')
+    print('fitting and saving svm')
+    es.fit_and_save(es.X_train_t_res, es.y_train_t_res)
+
+
+    # gmm_clf = GMM(n_components=n_classes, covariance_type='full', n_init=5, means_init=pd.DataFrame(X_train_t_res).groupby(y_train_t_res).mean().values)
+    # gmm_clf = GMM(n_components=500, covariance_type='spherical', n_init=50)
+    # gmm_clf.fit(X_train_t_res, y_train_t_res) 
+    # gmm_clf.fit(X_train_t_res) 
+
+    
+    # clf = GMM(n_components=n_classes, covariance_type='spherical')
+    # do_train(clf, 'GMM_basic')
+    # clf = svm.LinearSVC()
+    # do_train(clf, 'svm_basic')

@@ -1,10 +1,29 @@
 #+TITLE: README 
 
-
-
-
-
 Document the Steps that were needed to carry out the audEERING coding Task
+
+
+* Short Version of the Steps
+
+Allgemein: Cookiecutter Data Science Template
+
+Step 1 - Building the dataset
+
+Als Gradle Task implmentiert
+
+Step 2 -  Build Classifier
+
+Benutzt momentan lediglich Functionals und keine llds
+
+Step 3 - Generate Html-Report
+
+Eine Variante ist implemtiert, s. src/models/make_report.py. 
+Diese nimmt die papermill bibliothek her und lässt 'report_nb.ipynb' parametrisiert (model name) laufen. Der
+Output landet dann in einem intermediate notebook. Dieses wird dann mit nbconvert konvertiert (tmp.html)
+
+Step 4 - Docker Deployment
+
+Unfinished. Bisher ist lediglich das image gebaut. 
 
 * Step 1 - Building the dataset
 
@@ -17,33 +36,64 @@ The task itself can be invoked via
 ./gradlew makeDataSet 
 #+END_SRC
 
-The shell script `wav2features.sh` that is called during the task to date requires some extra work, as some env
-variables are currently hardcoded.
-
-- TODOS: Currently uses the functionals only, these are extracted using a script that iterates over
-  a generated file list. Directory Input?
+- wav2features.sh: some env variables are hardcoded.
+- soll man den Datensatz end2end bauen, also inklusive wget? Hätte den Charme, daß man diesen gleich
+  gemeinsam mit einem git clone ins image verbauen kann?
+- dann könnte ein daraus abgleiteter Container einen branch pullen und Classifier bauen und report
+  gen mitmachen??
+- Directory Input
 
 * Step 2 - Build Classifier
 
 - Nur die Functionals wurden Extrahiert, also nicht mehrere Analyseframes per Äusserung
-- 
+
+#+BEGIN_SRC shell
+./gradlew trainModel 
+#+END_SRC
+
+- train_model.py ist ziemlich ad hoc. Idealerweise will der irgendwann mit sklearn BaseEstimator kompatibel werden.
 
 * Step 3 - Generate Report 
 
 Run the model for Report Generation
 
 #+BEGIN_SRC shell
-./gradlew makeModel 
+./gradlew makeReportGMMBasic
+./gradlew makeReportsvmBasic
 #+END_SRC
 
+- Notice: bug in papermill + ipykernel: Läuft trotzdem
 
-* Deployment 
+- Alternative sacredboard -mu  mongodb://root:example@localhost:27017 mnist
+Mongo admin interface; localhost:8081
+Sacred: https://pypi.org/project/sacred/
+ sacredboard -mu  mongodb://root:example@localhost:27017 torch-bilstm-jean-christophe
+ http://localhost:8081/
+Show decorators:
+ /D/myfiles/2019/Sacred-MNIST/train_convnet.py
 
-# As a deliverable, please provide access to a Git repository that contains all code
-# and documentation to perform the steps above, and provide the report as an
-# assets or webpage. Ideally, everything can be run in a clean sandbox environment
+- mir fehlt noch die richtige Idee, wie man die Dockerisierung aufsetzt:
+reine 
+
+
+* Deployment Docker
+
+# As a deliverable, please provide access to a Git repository that contains all code and documentation
+# to perform the steps above, and provide the report as an assets or webpage. 
+# Ideally, everything can be run in a clean sandbox environment
 # such as a stock Ubuntu VM or Docker container. It’s perfectly acceptable to
 # keep this private, as long as you share it with us.
+
+
+docker build -t training_image .
+Successfully built a58fc48440db
+Successfully tagged training_image:latest
+
+
+docker rm train_model
+docker run --name=train_model python-app 
+
+
 
 
 * Informal Final Observations
@@ -62,20 +112,14 @@ https://elitedatascience.com/imbalanced-classes
 https://github.com/trigeorgis/ComParE2017
 https://github.com/sercharpak/Emo-DB
 
-
 Eclipse
 https://oremacs.com/2017/03/28/emacs-cpp-ide/
 https://www.eclipse.org/forums/index.php/t/1084520/
 
-
-
 https://github.com/takluyver/nbparameterise/tree/master/examples
-
 
 GMM UBM for speaker verification with code
 https://wsstriving.github.io/2016/04/28/Code-Based-GMM-UBM-Tutorial/
-
-
 
 In the conventional GMM-UBM framework the universal background model (UBM) is a Gaussian mixture
 model (GMM) that is trained on a pool of data (known as the background or development data) from a
@@ -125,6 +169,34 @@ SMILExtract -C config/demo/demo1_energy.conf -I wav_samples/speech01.wav -O spee
 
 SMILExtract -cfgFileTemplate -cfgFileDescriptions  -configDflt cWaveSource,cFramer,cEnergy,cCsvSink -l 1 2> myconfig/demo1.conf
 
+
+
+
+** Tracing : 
+
+Hier steigt er aus
+ConfigType::findField
+
+
+** Terminologie
+
+
+*** ‘field’, 
+
+*** ‘element’, 
+
+*** ‘frame’, 
+
+*** ‘window’.
+
+If we view the numeric contents of the data memory level as a 2D <nFields x nTimestemps>
+matrix, **frames** correspond to the columns of this matrix, and **windows** or **contours** correspond
+the rows of this matrix
+
+- Warum wurde nicht der "The INTERSPEECH 2009 Emotion Challenge feature set" für den Teaser
+  hergenommen?
+ 
+** Debug Example - energy2 - Meiner expXXX2
 
 * Docker
 
