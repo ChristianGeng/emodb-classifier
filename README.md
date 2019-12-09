@@ -1,16 +1,16 @@
 
 # Table of Contents
 
-1.  [Short Version of the Steps](#orgaf96496)
-2.  [Step 1 - Building the dataset](#org21a5f32)
-3.  [Step 2 - Build Classifier](#org90802d0)
-4.  [Step 3 - Generate Report](#org2645f41)
-5.  [Deployment Docker - Unfinished](#org6b4a5f1)
+1.  [Short Version of the Steps](#orge0617e3)
+2.  [Step 1 - Building the dataset](#orga3f1eaa)
+3.  [Step 2 - Build Classifier](#orgc032d4b)
+4.  [Step 3 - Generate Report](#orga222f8e)
+5.  [Deployment Docker - Unfinished](#org5ec7e70)
 
 Document the Steps that were needed to carry out the audEERING coding Task
 
 
-<a id="orgaf96496"></a>
+<a id="orge0617e3"></a>
 
 # Short Version of the Steps
 
@@ -35,7 +35,7 @@ Step 4 - Docker Deployment
 Unfinished. Bisher ist lediglich das image gebaut. 
 
 
-<a id="org21a5f32"></a>
+<a id="orga3f1eaa"></a>
 
 # Step 1 - Building the dataset
 
@@ -54,7 +54,7 @@ The task itself can be invoked via
 -   Directory Input
 
 
-<a id="org90802d0"></a>
+<a id="orgc032d4b"></a>
 
 # Step 2 - Build Classifier
 
@@ -62,10 +62,14 @@ The task itself can be invoked via
 
     ./gradlew trainModel 
 
--   train<sub>model.py</sub> ist ziemlich ad hoc. Idealerweise will der irgendwann mit sklearn BaseEstimator kompatibel werden.
+-   train<sub>model.py</sub> code ist ziemlich ad hoc. Idealerweise will der irgendwann mit sklearn
+    BaseEstimator kompatibel werden.
+-   Voice Activity Detection? Verzerrungen durch silence
+-   Modelle:  GMM ist nicht wirklich fertig. Die Ergebnnisse sind noch instabil; keine llds
+-   Interpretation bisher nicht durchgeführt
 
 
-<a id="org2645f41"></a>
+<a id="orga222f8e"></a>
 
 # Step 3 - Generate Report
 
@@ -85,12 +89,10 @@ Sacred: <https://pypi.org/project/sacred/>
 Show decorators:
  /D/myfiles/2019/Sacred-MNIST/train<sub>convnet.py</sub>
 
--   mir fehlt noch die richtige Idee, wie man die Dockerisierung aufsetzt:
-
-reine 
+-   Accuracy: Normalisieren
 
 
-<a id="org6b4a5f1"></a>
+<a id="org5ec7e70"></a>
 
 # Deployment Docker - Unfinished
 

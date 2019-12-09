@@ -34,7 +34,7 @@ class PelicanSubCell(Preprocessor):
     # I could also read the cells from nb.metadata.pelican if someone wrote a JS extension,
     # but for now I'll stay with configurable value.
     start = Integer(6,  help="first cell of notebook to be converted")
-    end = Integer(9, help="last cell of notebook to be converted")
+    end = Integer(10, help="last cell of notebook to be converted")
     start.tag(config='True')
     end.tag(config='True')
 
