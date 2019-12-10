@@ -1,41 +1,27 @@
 
 # Table of Contents
 
-1.  [Short Version of the Steps](#orge0617e3)
-2.  [Step 1 - Building the dataset](#orga3f1eaa)
-3.  [Step 2 - Build Classifier](#orgc032d4b)
-4.  [Step 3 - Generate Report](#orga222f8e)
-5.  [Deployment Docker - Unfinished](#org5ec7e70)
+1.  [Short Version of the Steps](#org74f3dbd)
+2.  [Step 1 - Building the dataset](#org56644e6)
+3.  [Step 2 - Build Classifier](#org7a2c9c0)
+4.  [Step 3 - Generate Report](#org78a9e25)
+5.  [Deployment Docker - Unfinished](#org94ea296)
 
 Document the Steps that were needed to carry out the audEERING coding Task
 
 
-<a id="orge0617e3"></a>
+<a id="org74f3dbd"></a>
 
 # Short Version of the Steps
 
 Allgemein: Cookiecutter Data Science Template
-
-Step 1 - Building the dataset
-
-Als Gradle Task implmentiert
-
-Step 2 -  Build Classifier
-
-Benutzt momentan lediglich Functionals und keine llds
-
-Step 3 - Generate Html-Report
-
-Eine Variante ist implemtiert, s. src/models/make<sub>report.py</sub>. 
-Diese nimmt die papermill bibliothek her und lässt 'report<sub>nb.ipynb</sub>' parametrisiert (model name) laufen. Der
-Output landet dann in einem intermediate notebook. Dieses wird dann mit nbconvert konvertiert (tmp.html)
 
 Step 4 - Docker Deployment
 
 Unfinished. Bisher ist lediglich das image gebaut. 
 
 
-<a id="orga3f1eaa"></a>
+<a id="org56644e6"></a>
 
 # Step 1 - Building the dataset
 
@@ -54,7 +40,7 @@ The task itself can be invoked via
 -   Directory Input
 
 
-<a id="orgc032d4b"></a>
+<a id="org7a2c9c0"></a>
 
 # Step 2 - Build Classifier
 
@@ -69,7 +55,7 @@ The task itself can be invoked via
 -   Interpretation bisher nicht durchgeführt
 
 
-<a id="orga222f8e"></a>
+<a id="org78a9e25"></a>
 
 # Step 3 - Generate Report
 
@@ -77,6 +63,10 @@ Run the model for Report Generation
 
     ./gradlew makeReportGMMBasic
     ./gradlew makeReportsvmBasic
+
+Eine Variante ist implemtiert, s. src/models/make<sub>report.py</sub>. 
+Diese nimmt die papermill bibliothek her und lässt 'report<sub>nb.ipynb</sub>' parametrisiert (model name) laufen. Der
+Output landet dann in einem intermediate notebook. Dieses wird dann mit nbconvert konvertiert (tmp.html)
 
 -   Notice: bug in papermill + ipykernel: Läuft trotzdem
 
@@ -92,16 +82,11 @@ Show decorators:
 -   Accuracy: Normalisieren
 
 
-<a id="org5ec7e70"></a>
+<a id="org94ea296"></a>
 
 # Deployment Docker - Unfinished
 
     docker build -t training_image .
     Successfully built a58fc48440db
     Successfully tagged training_image:latest
-
-    -C /home/christian/bin/opensmile-2.3.0/config/IS13_ComParE.conf  -I /media/win-d/myfiles/2019/emodb-classifier/data/raw/wav/03a01Fa.wav -csvoutput /tmp/results.csv  -appendcsv 1
-    -C /home/christian/bin/opensmile-2.3.0/config/IS13_ComParE.conf  -I /media/win-d/myfiles/2019/emodb-classifier/data/raw/wav/03a01Fa.wav -csvoutput /tmp/results.csv  -appendcsv 1
-    # Fuer Energy
-    SMILExtract -C myconfig/demo1.conf -I ./example-audio/opensmile.wav -O myenergy.csv
 
